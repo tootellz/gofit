@@ -7,7 +7,7 @@ import (
   "time"
   "net/http"
   "github.com/influxdata/influxdb/client/v2"
-  "github.com/timatooth/gofit/fitbitapi"
+  "github.com/tootellz/gofit/fitbitapi"
 )
 
 const (
