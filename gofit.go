@@ -61,6 +61,37 @@ func loadInfluxData(api *fitbitapi.Api){
   }
   fmt.Println("Done loading steps")
 
+  fmt.Println("Loading distance data")
+  activityDistance := api.GetActivityDistance()
+  bp, err3 := client.NewBatchPoints(client.BatchPointsConfig{
+    Database: InfluxDatabaseName,
+    Precision: "s",
+    })
+  if err != nil {
+    log.Fatal(err3)
+  }
+
+  for _, v := range activityDistance.Distance{
+    t1, e := time.Parse("2006-01-02", v.Time)
+    if e != nil {
+      log.Fatal(e)
+    }
+    tags := map[string]string{"distance": "distance-total"}
+    fields := map[string]interface{}{
+      "distance": v.Value,
+    }
+    pt, err3 := client.NewPoint("activity_distance", tags, fields, t1)
+    if err3 != nil {
+      log.Fatal(err3)
+    }
+    bp.AddPoint(pt)
+  }
+
+  if err3 := c.Write(bp); err3 != nil {
+    log.Fatal(err3)
+  }
+  fmt.Println("Done loading distance data")
+  
   fmt.Println("Loading resting heartrate data")
   activityHeart := api.GetRestingHeartrate()
 

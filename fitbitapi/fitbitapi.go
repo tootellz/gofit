@@ -25,6 +25,10 @@ type FitbitAuth struct {
   Scope string `json:"scope"`
 }
 
+type ActivityDistance struct {
+  Distance []DataPoint `json:"activities-distance"`
+}
+
 type ActivitySteps struct {
   Steps []DataPoint `json:"activities-steps"`
 }
@@ -111,6 +115,17 @@ func (api *Api) GetActivitySteps() ActivitySteps{
   return activitySteps
 }
 
+func (api *Api) GetActivityDistance() ActivityDistance{
+  req, _ := http.NewRequest("GET", "https://api.fitbit.com/1/user/-/activities/steps/date/today/1y.json", nil)
+  req.Header.Set("Authorization", "Bearer " + api.Auth.AccessToken)
+  res, _ := http.DefaultClient.Do(req)
+  var activityDistance ActivityDistance
+  decoder := json.NewDecoder(res.Body)
+  decerr := decoder.Decode(&activityDistance)
+  if decerr != nil { panic(decerr) }
+  res.Body.Close()
+  return activityDistance
+}
 
 func (api *Api) GetRestingHeartrate() ActivityHeart{
   req, _ := http.NewRequest("GET", "https://api.fitbit.com/1/user/-/activities/heart/date/today/1y.json", nil)
