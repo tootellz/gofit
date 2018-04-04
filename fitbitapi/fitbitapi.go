@@ -116,7 +116,7 @@ func (api *Api) GetActivitySteps() ActivitySteps{
 }
 
 func (api *Api) GetActivityDistance() ActivityDistance{
-  req, _ := http.NewRequest("GET", "https://api.fitbit.com/1/user/-/activities/steps/date/today/1y.json", nil)
+  req, _ := http.NewRequest("GET", "https://api.fitbit.com/1/user/-/activities/distance/date/today/1y.json", nil)
   req.Header.Set("Authorization", "Bearer " + api.Auth.AccessToken)
   res, _ := http.DefaultClient.Do(req)
   var activityDistance ActivityDistance
