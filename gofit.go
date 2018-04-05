@@ -67,7 +67,7 @@ func loadInfluxData(api *fitbitapi.Api){
     Database: InfluxDatabaseName,
     Precision: "s",
     })
-  if err != nil {
+  if err3 != nil {
     log.Fatal(err3)
   }
 
@@ -91,6 +91,38 @@ func loadInfluxData(api *fitbitapi.Api){
     log.Fatal(err3)
   }
   fmt.Println("Done loading distance data")
+  
+  fmt.Println("Loading weight data")
+  bodyWeight := api.GetBodyWeight()
+  bp, err4 := client.NewBatchPoints(client.BatchPointsConfig{
+    Database: InfluxDatabaseName,
+    Precision: "s",
+    })
+  if err4 != nil {
+    log.Fatal(err4)
+  }
+
+  for _, v := range bodyWeight.Weight{
+    t1, e := time.Parse("2006-01-02", v.Time)
+    if e != nil {
+      log.Fatal(e)
+    }
+    tags := map[string]string{"weight":"body-weight"}
+    fields := map[string]interface{}{
+      "weight": v.Value,
+    }
+    pt, err4 := client.NewPoint("body_weight", tags, fields, t1)
+    if err4 != nil {
+      log.Fatal(err4)
+    }
+    bp.AddPoint(pt)
+  }
+
+  if err4 := c.Write(bp); err4 != nil {
+    log.Fatal(err4)
+  }
+  fmt.Println("Done loading body weight data")
+
   
   fmt.Println("Loading resting heartrate data")
   activityHeart := api.GetRestingHeartrate()
